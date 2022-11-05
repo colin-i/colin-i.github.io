@@ -2,15 +2,16 @@
 <script type="module">
 import { Octokit } from "https://cdn.skypack.dev/@octokit/core";
 
+const octokit = new Octokit({
+  auth: 'github_pat_'+'11ACTLOTY0hEfZBPtCUcq9_JO1u7Gf70NNbzL7bZhQPhTcVwsuiqbdWjdCHXfEr5PwR2RM5SYD4XmFbtll'
+			//it expires if pushed without this
+});
+
 var field = 'addscorestore';
 var url = window.location.href;
 if(url.indexOf('?' + field + '=') != -1){
 	console.log("score");
-	const octokit = new Octokit({
-	  auth: 'github_pat_'+'11ACTLOTY0hEfZBPtCUcq9_JO1u7Gf70NNbzL7bZhQPhTcVwsuiqbdWjdCHXfEr5PwR2RM5SYD4XmFbtll'
-				//it expires if pushed without this
-	})
-	
+
 	await octokit.request('POST /repos/colin-i/experimental/actions/workflows/39687662/dispatches', {
 	//  owner: 'colin-i',
 	//  repo: 'experimental',
@@ -21,5 +22,11 @@ if(url.indexOf('?' + field + '=') != -1){
 	//    home: 'San Francisco, CA'
 	//  }
 	})
-}else console.log("Nothing")
+}else{
+	console.log("read");
+
+	var obj=await octokit.request("GET /repos/colin-i/experimental/contents/report.txt", {});
+	var text=atob(obj.data.content);
+	console.log(text)
+}
 </script>
