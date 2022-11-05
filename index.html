@@ -7,7 +7,7 @@ var url = window.location.href;
 if(url.indexOf('?' + field + '=') != -1){
 	console.log("score");
 	const octokit = new Octokit({
-	  auth: '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'
+	  auth: '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'
 	})
 	
 	await octokit.request('POST /repos/colin-i/experimental/actions/workflows/39687662/dispatches', {
