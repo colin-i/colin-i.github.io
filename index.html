@@ -4,7 +4,7 @@ import { Octokit } from "https://cdn.skypack.dev/@octokit/core";
 
 const octokit = new Octokit({
   auth: 'github_pat_'+'11ACTLOTY0hEfZBPtCUcq9_JO1u7Gf70NNbzL7bZhQPhTcVwsuiqbdWjdCHXfEr5PwR2RM5SYD4XmFbtll'
-			//it expires if pushed without this
+			//it expires if pushed without +
 });
 
 var field = 'addscorestore';
@@ -22,7 +22,7 @@ if(url.indexOf('?' + field + '=') != -1){
 	//    home: 'San Francisco, CA'
 	//  }
 	})
-}else{
+
 	console.log("read");
 
 	var obj=await octokit.request("GET /repos/colin-i/experimental/contents/report.txt", {});
@@ -30,3 +30,8 @@ if(url.indexOf('?' + field + '=') != -1){
 	console.log(text)
 }
 </script>
+
+<a href="#" onclick="history.back()">Click here to go back</a>
+
+<!-- alltime/month (top 25 + total) -->
+<!-- name/score/comment -->
