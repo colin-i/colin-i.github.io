@@ -7,27 +7,28 @@ const octokit = new Octokit({
 			//it expires if pushed without +
 });
 
-var field = 'addscorestore';
-var url = window.location.href;
-if(url.indexOf('?' + field + '=') != -1){
-	console.log("score");
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+
+if(urlParams.has('score_text')){
+	const game = urlParams.get('game_name')
+	const name = urlParams.get('name_text')
+	const score = urlParams.get('score_text')
+	const comment = urlParams.get('comment_text')
 
 	await octokit.request('POST /repos/colin-i/experimental/actions/workflows/39687662/dispatches', {
-	//  owner: 'colin-i',
-	//  repo: 'experimental',
-	//  workflow_id: '39687662',
-	  ref: 'main'//,
-	//  inputs: {
-	//    name: 'Mona the Octocat',
-	//    home: 'San Francisco, CA'
-	//  }
+		ref: 'main'//,
+		inputs: {
+			game: game,
+			name: name,
+			score: score,
+			comment: comment
+		}
 	})
-
-	console.log("read");
-
-	var obj=await octokit.request("GET /repos/colin-i/experimental/contents/report.txt", {});
-	var text=atob(obj.data.content);
-	console.log(text)
+	//console.log("read");
+	//var obj=await octokit.request("GET /repos/colin-i/experimental/contents/report.txt", {});
+	//var text=atob(obj.data.content);
+	//console.log(text)
 }
 </script>
 
