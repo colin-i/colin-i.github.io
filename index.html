@@ -7,28 +7,62 @@ const octokit = new Octokit({
 			//it expires if pushed without +
 });
 
+function btod(b){
+	var obj=atob(b);
+	var score = obj.charCodeAt(0) | (obj.charCodeAt(1) << 8) | (obj.charCodeAt(2) << 16) | (obj.charCodeAt(3) << 24);
+	obj=obj.slice(4);
+	for(var i=0;i<obj.length;i++){
+		if(obj.charCodeAt(i)==0){
+			var name=obj.substr(0,i);
+			obj=obj.slice(i+1);
+			break;
+		}
+	}
+	for(var i=0;i<obj.length;i++){
+		if(obj.charCodeAt(i)==0){
+			var comment=obj.substr(0,i);
+			obj=obj.slice(i+1);
+			break;
+		}
+	}
+	var timeleft = obj.charCodeAt(0) | (obj.charCodeAt(1) << 8) | (obj.charCodeAt(2) << 16) | (obj.charCodeAt(3) << 24);
+	obj=obj.slice(4);
+	var timeright = obj.charCodeAt(0) | (obj.charCodeAt(1) << 8) | (obj.charCodeAt(2) << 16) | (obj.charCodeAt(3) << 24);
+	var time = 2**32*timeright + timeleft;
+}
+
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 
-if(urlParams.has('score_text')){
+if(urlParams.has('game_name')){
 	const game = urlParams.get('game_name')
-	const name = urlParams.get('name_text')
-	const score = urlParams.get('score_text')
-	const comment = urlParams.get('comment_text')
-
-	await octokit.request('POST /repos/colin-i/experimental/actions/workflows/39687662/dispatches', {
-		ref: 'main'//,
-		inputs: {
-			game: game,
-			name: name,
-			score: score,
-			comment: comment
-		}
-	})
-	//console.log("read");
-	//var obj=await octokit.request("GET /repos/colin-i/experimental/contents/report.txt", {});
-	//var text=atob(obj.data.content);
-	//console.log(text)
+	var obj=await octokit.request("GET /repos/colin-i/experimental/contents/recent/"+game, {});
+	var recent=atob(obj.data.content);
+	obj=await octokit.request("GET /repos/colin-i/experimental/contents/recent/"+game+".tot", {});
+	var recentsum=atob(obj.data.content);
+	obj=await octokit.request("GET /repos/colin-i/experimental/contents/last/"+game, {});
+	var last=atob(obj.data.content);
+	obj=await octokit.request("GET /repos/colin-i/experimental/contents/last/"+game+".tot", {});
+	var lastsum=atob(obj.data.content);
+	obj=await octokit.request("GET /repos/colin-i/experimental/contents/data/"+game, {});
+	var alltime=atob(obj.data.content);
+	obj=await octokit.request("GET /repos/colin-i/experimental/contents/datasum/"+game+".tot", {});
+	var alltimesum=atob(obj.data.content);
+	if(urlParams.has('score_text')){
+		const name = urlParams.get('name_text')
+		const score = urlParams.get('score_text')
+		const comment = urlParams.get('comment_text')
+	
+		await octokit.request('POST /repos/colin-i/experimental/actions/workflows/39687662/dispatches', {
+			ref: 'main',
+			inputs: {
+				game: game,
+				name: name,
+				score: score,
+				comment: comment
+			}
+		})
+	}
 }
 </script>
 
