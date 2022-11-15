@@ -52,7 +52,7 @@ if(urlParams.has('game_name')){
 		const name = urlParams.get('name_text')
 		const score = urlParams.get('score_text')
 		const comment = urlParams.get('comment_text')
-	
+
 		await octokit.request('POST /repos/colin-i/experimental/actions/workflows/39687662/dispatches', {
 			ref: 'main',
 			inputs: {
