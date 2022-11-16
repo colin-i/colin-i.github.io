@@ -1,4 +1,6 @@
 
+<a href="#" onclick="history.back()">Click here to go back</a>
+
 <script type="module">
 import { Octokit } from "https://cdn.skypack.dev/@octokit/core";
 
@@ -7,52 +9,73 @@ const octokit = new Octokit({
 			//it expires if pushed without +
 });
 
-function btod(b){
-	var obj=atob(b);
-	var score = obj.charCodeAt(0) | (obj.charCodeAt(1) << 8) | (obj.charCodeAt(2) << 16) | (obj.charCodeAt(3) << 24);
+function btol(obj){
+	const timeleft = obj.charCodeAt(0) | (obj.charCodeAt(1) << 8) | (obj.charCodeAt(2) << 16) | (obj.charCodeAt(3) << 24);
 	obj=obj.slice(4);
-	for(var i=0;i<obj.length;i++){
-		if(obj.charCodeAt(i)==0){
-			var name=obj.substr(0,i);
-			obj=obj.slice(i+1);
-			break;
+	const timeright = obj.charCodeAt(0) | (obj.charCodeAt(1) << 8) | (obj.charCodeAt(2) << 16) | (obj.charCodeAt(3) << 24);
+	return 2**32*timeright + timeleft;
+}
+function atod(a){
+	let out=[];
+	let obj=atob(a);
+	while(obj.length!=0){
+		const score = obj.charCodeAt(0) | (obj.charCodeAt(1) << 8) | (obj.charCodeAt(2) << 16) | (obj.charCodeAt(3) << 24);
+		obj=obj.slice(4);
+		let i;
+		for(i=0;i<obj.length;i++)if(obj.charCodeAt(i)==0)break;
+		const name=obj.substr(0,i);
+		obj=obj.slice(i+1);
+		for(i=0;i<obj.length;i++)if(obj.charCodeAt(i)==0)break;
+		const comment=obj.substr(0,i);
+		obj=obj.slice(i+1);
+		const time=new Date(btol(obj)*1000);
+		obj=obj.slice(8);
+		const item={
+			score: score,
+			name: name,
+			comment: comment,
+			time: time
 		}
+		out.push(item);
 	}
-	for(var i=0;i<obj.length;i++){
-		if(obj.charCodeAt(i)==0){
-			var comment=obj.substr(0,i);
-			obj=obj.slice(i+1);
-			break;
-		}
+	return out;
+}
+function atol(a){
+	return btol(atob(a));
+}
+function dgoh(d,main,sum){
+	document.body.innerHTML+="<br><h3>"+main+" Top</h3>";
+	let table="<table style='border:1px solid'><tr><th>Name</th><th>Score</th><th>Date</th><th>Comment</th></tr>";
+	for(let i=0;i<d.length;i++){
+		const x=d[i];
+		table+="<tr><td>"+x.name+"</td><td>"+x.score.toString()+"</td><td>"+x.time.toString()+"</td><td>"+x.comment+"</td></tr>";
 	}
-	var timeleft = obj.charCodeAt(0) | (obj.charCodeAt(1) << 8) | (obj.charCodeAt(2) << 16) | (obj.charCodeAt(3) << 24);
-	obj=obj.slice(4);
-	var timeright = obj.charCodeAt(0) | (obj.charCodeAt(1) << 8) | (obj.charCodeAt(2) << 16) | (obj.charCodeAt(3) << 24);
-	var time = 2**32*timeright + timeleft;
+	document.body.innerHTML+=table+"</table>";
+	document.body.innerHTML+="<p>Total entries: "+sum.toString()+"</p>";
 }
 
-const queryString = window.location.search;
+const queryString = self.location.search;
 const urlParams = new URLSearchParams(queryString);
 
 if(urlParams.has('game_name')){
-	const game = urlParams.get('game_name')
-	var obj=await octokit.request("GET /repos/colin-i/experimental/contents/recent/"+game, {});
-	var recent=atob(obj.data.content);
+	const gn='game_name';
+	const game = urlParams.get(gn)
+	let obj=await octokit.request("GET /repos/colin-i/experimental/contents/recent/"+game, {});
+	const recent=atod(obj.data.content);
 	obj=await octokit.request("GET /repos/colin-i/experimental/contents/recent/"+game+".tot", {});
-	var recentsum=atob(obj.data.content);
+	const recentsum=atol(obj.data.content);
 	obj=await octokit.request("GET /repos/colin-i/experimental/contents/last/"+game, {});
-	var last=atob(obj.data.content);
+	const last=atod(obj.data.content);
 	obj=await octokit.request("GET /repos/colin-i/experimental/contents/last/"+game+".tot", {});
-	var lastsum=atob(obj.data.content);
+	const lastsum=atol(obj.data.content);
 	obj=await octokit.request("GET /repos/colin-i/experimental/contents/data/"+game, {});
-	var alltime=atob(obj.data.content);
+	const alltime=atod(obj.data.content);
 	obj=await octokit.request("GET /repos/colin-i/experimental/contents/datasum/"+game+".tot", {});
-	var alltimesum=atob(obj.data.content);
+	const alltimesum=atol(obj.data.content);
 	if(urlParams.has('score_text')){
 		const name = urlParams.get('name_text')
 		const score = urlParams.get('score_text')
 		const comment = urlParams.get('comment_text')
-
 		await octokit.request('POST /repos/colin-i/experimental/actions/workflows/39687662/dispatches', {
 			ref: 'main',
 			inputs: {
@@ -62,11 +85,16 @@ if(urlParams.has('game_name')){
 				comment: comment
 			}
 		})
+		const item={
+			score: score,
+			name: name,
+			comment: comment,
+			time: time
+		}
+		document.body.innerHTML+="<p><a href='"+self.location.href.split('?')[0]+"?"+gn+"="+game_name+"'>Score sent: "+score+". Click to refresh.</a></p>";
 	}
+	dgoh(recent,"This Month",recentsum);
+	dgoh(last,"Last Month",lastsum);
+	dgoh(alltime,"All Time",alltimesum);
 }
 </script>
-
-<a href="#" onclick="history.back()">Click here to go back</a>
-
-<!-- alltime/month (top 25 + total) -->
-<!-- name/score/comment/date -->
