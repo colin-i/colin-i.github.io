@@ -91,8 +91,9 @@ if(urlParams.has('game_name')){
 			comment: comment,
 			time: time
 		}
-		document.body.innerHTML+="<p><a href='"+self.location.href.split('?')[0]+"?"+gn+"="+game_name+"'>Score sent: "+score+". Click to refresh.</a></p>";
+		document.body.innerHTML+="<p>Score sent: "+score+"</p>";
 	}
+	document.body.innerHTML+="<p><a href='"+self.location.href.split('?')[0]+"?"+gn+"="+game_name+"'>Click here to refresh</a></p>";
 	dgoh(recent,"This Month",recentsum);
 	dgoh(last,"Last Month",lastsum);
 	dgoh(alltime,"All Time",alltimesum);
