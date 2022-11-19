@@ -54,24 +54,24 @@ function dgoh(d,main,sum){
 	document.body.innerHTML+="<p>Total entries: "+sum.toString()+"</p>";
 }
 
+let game;
+async function get_content(clas,ext=""){
+	const obj=await octokit.request("GET /repos/colin-i/experimental/contents/"+clas+"/"+game+ext, {ref: 'main'});
+	return obj.data.content;
+}
+
 const queryString = self.location.search;
 const urlParams = new URLSearchParams(queryString);
 
 if(urlParams.has('game_name')){
 	const gn='game_name';
-	const game = urlParams.get(gn)
-	let obj=await octokit.request("GET /repos/colin-i/experimental/contents/recent/"+game, {});
-	const recent=atod(obj.data.content);
-	obj=await octokit.request("GET /repos/colin-i/experimental/contents/recent/"+game+".tot", {});
-	const recentsum=atol(obj.data.content);
-	obj=await octokit.request("GET /repos/colin-i/experimental/contents/last/"+game, {});
-	const last=atod(obj.data.content);
-	obj=await octokit.request("GET /repos/colin-i/experimental/contents/last/"+game+".tot", {});
-	const lastsum=atol(obj.data.content);
-	obj=await octokit.request("GET /repos/colin-i/experimental/contents/data/"+game, {});
-	const alltime=atod(obj.data.content);
-	obj=await octokit.request("GET /repos/colin-i/experimental/contents/datasum/"+game+".tot", {});
-	const alltimesum=atol(obj.data.content);
+	game = urlParams.get(gn)
+	const recent=atod(await get_content("recent"));
+	const recentsum=atol(await get_content("recent",".tot"));
+	const last=atod(await get_content("last"));
+	const lastsum=atol(await get_content("last",".tot"));
+	const alltime=atod(await get_content("data"));
+	const alltimesum=atol(await get_content("data",".tot"));
 	if(urlParams.has('score_text')){
 		const name = urlParams.get('name_text')
 		const score = urlParams.get('score_text')
