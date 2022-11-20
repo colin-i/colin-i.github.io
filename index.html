@@ -85,12 +85,6 @@ if(urlParams.has('game_name')){
 				comment: comment
 			}
 		})
-		const item={
-			score: score,
-			name: name,
-			comment: comment,
-			time: time
-		}
 		document.body.innerHTML+="<p>Score sent: "+score+"</p>";
 	}
 	document.body.innerHTML+="<p><a href='"+self.location.href.split('?')[0]+"?"+gn+"="+game_name+"'>Click here to refresh</a></p>";
