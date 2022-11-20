@@ -1,4 +1,6 @@
 
+<body style="background-color: #101010; color: #ffffff;"><!-- kongregate is always black -->
+
 <a href="#" onclick="history.back()">Click here to go back</a>
 
 <script type="module">
@@ -43,21 +45,34 @@ function atod(a){
 function atol(a){
 	return btol(atob(a));
 }
+
+let tables;
 function dgoh(d,main,sum){
-	document.body.innerHTML+="<br><h3>"+main+" Top</h3>";
+	tables.innerHTML+="<br><h3>"+main+" Top</h3>";
 	let table="<table style='border:1px solid'><tr><th></th><th>Name</th><th>Score</th><th>Date</th><th>Comment</th></tr>";
 	for(let i=0;i<d.length;i++){
 		const x=d[i];
 		table+="<tr><td>"+(i+1)+"</td><td>"+x.name+"</td><td>"+x.score.toString()+"</td><td>"+x.time.toString()+"</td><td>"+x.comment+"</td></tr>";
 	}
-	document.body.innerHTML+=table+"</table>";
-	document.body.innerHTML+="<p>Total entries: "+sum.toString()+"</p>";
+	tables.innerHTML+=table+"</table>";
+	tables.innerHTML+="<p>Total entries: "+sum.toString()+"</p>";
 }
 
 let game;
 async function get_content(clas,ext=""){
 	const obj=await octokit.request("GET /repos/colin-i/experimental/contents/"+clas+"/"+game+ext, {ref: 'main'});
 	return obj.data.content;
+}
+async function write_tabs(){
+	const recent=atod(await get_content("recent"));
+	const recentsum=atol(await get_content("recent",".tot"));
+	const last=atod(await get_content("last"));
+	const lastsum=atol(await get_content("last",".tot"));
+	const alltime=atod(await get_content("data"));
+	const alltimesum=atol(await get_content("data",".tot"));
+	dgoh(recent,"This Month",recentsum);
+	dgoh(last,"Last Month",lastsum);
+	dgoh(alltime,"All Time",alltimesum);
 }
 
 const queryString = self.location.search;
@@ -66,16 +81,10 @@ const urlParams = new URLSearchParams(queryString);
 if(urlParams.has('game_name')){
 	const gn='game_name';
 	game = urlParams.get(gn)
-	const recent=atod(await get_content("recent"));
-	const recentsum=atol(await get_content("recent",".tot"));
-	const last=atod(await get_content("last"));
-	const lastsum=atol(await get_content("last",".tot"));
-	const alltime=atod(await get_content("data"));
-	const alltimesum=atol(await get_content("data",".tot"));
 	if(urlParams.has('score_text')){
-		const name = urlParams.get('name_text')
 		const score = urlParams.get('score_text')
-		const comment = urlParams.get('comment_text')
+		const name = urlParams.has('name_text')?urlParams.get('name_text'):""
+		const comment = urlParams.has('comment_text')?urlParams.get('comment_text'):""
 		await octokit.request('POST /repos/colin-i/experimental/actions/workflows/39687662/dispatches', {
 			ref: 'main',
 			inputs: {
@@ -87,9 +96,18 @@ if(urlParams.has('game_name')){
 		})
 		document.body.innerHTML+="<p>Score sent: "+score+"</p>";
 	}
-	document.body.innerHTML+="<p><a href='"+self.location.href.split('?')[0]+"?"+gn+"="+game+"'>Click here to refresh</a></p>";
-	dgoh(recent,"This Month",recentsum);
-	dgoh(last,"Last Month",lastsum);
-	dgoh(alltime,"All Time",alltimesum);
+	const el=document.createElement("p");
+	const el2=document.createElement("button");
+	el2.innerText="Click here to refresh";
+	el2.addEventListener("click",function(){
+		tables.innerHTML='';
+		write_tabs();
+	});
+	el.appendChild(el2);
+	document.body.appendChild(el);
+	tables=document.createElement("div");
+	write_tabs();
+	document.body.appendChild(tables);
 }
 </script>
+</body>
