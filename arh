@@ -6,8 +6,11 @@ a mers cu Base64
 6c6c 6f00 7489 7b63 0000 0000
 
 
-
-era 12 <a href='#'>test</a> ""  si data //Invalid date: b219 7b63 0000 0000
+era
+6504 0000 6269 7470 6c61 7965 7200 6865
+6c6c 6f00 120d 7b63 0000 0000
+12 <a>test</a> ""  si o data
+12 <a href='#'>test</a> ""  si data //Invalid date: b219 7b63 0000 0000
 data a mers cu
 
 /*function readTextFile(file)
@@ -22,3 +25,4 @@ si
 //decodeURIComponent(escape(atob(a)))
 dar si
 Base64.decode
+poate si cu ce e acum
