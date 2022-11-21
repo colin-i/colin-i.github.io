@@ -6,6 +6,8 @@
 <script type="module">
 import { Octokit } from "https://cdn.skypack.dev/@octokit/core";
 
+import { Base64 } from 'https://cdn.jsdelivr.net/npm/js-base64@3.7.3/base64.mjs';
+
 const octokit = new Octokit({
   auth: 'github_pat_'+'11ACTLOTY0WKpwsmTKIAl8_WC88XGSlRbWIHztTWt3c0zourkSlVkT3dETNxlkQQidRBUGFNQVGqKrzSYg'
 			//it expires if pushed without +
@@ -18,7 +20,7 @@ function btol(obj){
 	return 2**32*timeright + timeleft;
 }
 function _atob(a){
-	return decodeURIComponent(escape(atob(a)));//Invalid date: b219 7b63 0000 0000
+	return Base64.atob(a)
 }
 function atod(a){
 	let out=[];
@@ -73,19 +75,10 @@ function dgoh(d,main,sum){
 	tables.innerHTML+="<p>Total entries: "+sum.toString()+"</p>";
 }
 
-/*function readTextFile(file)
-{
-	const rawFile = new XMLHttpRequest();
-	rawFile.open("GET", file, false);
-	rawFile.send(null);
-	return btoa(unescape(encodeURIComponent(rawFile.responseText)));
-}*/
-
 let game;
 async function get_content(clas,ext=""){
 	const obj=await octokit.request("GET /repos/colin-i/experimental/contents/"+clas+"/"+game+ext, {ref: 'main'});
 	return obj.data.content;
-	//return readTextFile("/"+clas+"/"+game+ext);
 }
 async function write_tabs(){
 	const recent=atod(await get_content("recent"));
