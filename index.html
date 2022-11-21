@@ -17,9 +17,12 @@ function btol(obj){
 	const timeright = obj.charCodeAt(0) | (obj.charCodeAt(1) << 8) | (obj.charCodeAt(2) << 16) | (obj.charCodeAt(3) << 24);
 	return 2**32*timeright + timeleft;
 }
+function _atob(a){
+	return decodeURIComponent(escape(atob(a)));//Invalid date: b219 7b63 0000 0000
+}
 function atod(a){
 	let out=[];
-	let obj=atob(a);
+	let obj=_atob(a);
 	while(obj.length!=0){
 		const score = obj.charCodeAt(0) | (obj.charCodeAt(1) << 8) | (obj.charCodeAt(2) << 16) | (obj.charCodeAt(3) << 24);
 		obj=obj.slice(4);
@@ -43,25 +46,46 @@ function atod(a){
 	return out;
 }
 function atol(a){
-	return btol(atob(a));
+	return btol(_atob(a));
 }
 
 let tables;
 function dgoh(d,main,sum){
 	tables.innerHTML+="<br><h3>"+main+" Top</h3>";
-	let table="<table style='border:1px solid'><tr><th></th><th>Name</th><th>Score</th><th>Date</th><th>Comment</th></tr>";
+	const el=document.createElement("table");
+	el.style='border:1px solid';
+	el.innerHTML="<tr><th></th><th>Name</th><th>Score</th><th>Date</th><th>Comment</th></tr>";
 	for(let i=0;i<d.length;i++){
 		const x=d[i];
-		table+="<tr><td>"+(i+1)+"</td><td>"+x.name+"</td><td>"+x.score.toString()+"</td><td>"+x.time.toString()+"</td><td>"+x.comment+"</td></tr>";
+		const el2=document.createElement("tr");
+		el2.innerHTML="<td>"+(i+1)+"</td>";
+		let el3=document.createElement("td");
+		el3.innerText=x.name;
+		el2.appendChild(el3);
+		el2.innerHTML+="<td>"+x.score.toString()+"</td>";
+		el2.innerHTML+="<td>"+x.time.toString()+"</td>";
+		el3=document.createElement("td");
+		el3.innerText=x.comment;
+		el2.appendChild(el3);
+		el.appendChild(el2);
 	}
-	tables.innerHTML+=table+"</table>";
+	tables.appendChild(el);
 	tables.innerHTML+="<p>Total entries: "+sum.toString()+"</p>";
 }
+
+/*function readTextFile(file)
+{
+	const rawFile = new XMLHttpRequest();
+	rawFile.open("GET", file, false);
+	rawFile.send(null);
+	return btoa(unescape(encodeURIComponent(rawFile.responseText)));
+}*/
 
 let game;
 async function get_content(clas,ext=""){
 	const obj=await octokit.request("GET /repos/colin-i/experimental/contents/"+clas+"/"+game+ext, {ref: 'main'});
 	return obj.data.content;
+	//return readTextFile("/"+clas+"/"+game+ext);
 }
 async function write_tabs(){
 	const recent=atod(await get_content("recent"));
