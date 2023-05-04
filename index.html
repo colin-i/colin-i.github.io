@@ -99,6 +99,9 @@ if(urlParams.has('game_name')){
 	const gn='game_name';
 	game = urlParams.get(gn)
 	if(urlParams.has('score_text')){
+		const info = document.createElement("p");
+		info.innerText="Please wait...";
+		document.body.appendChild(info);
 		const score = urlParams.get('score_text')
 		const name = urlParams.has('name_text')?urlParams.get('name_text'):""
 		const comment = urlParams.has('comment_text')?urlParams.get('comment_text'):""
@@ -111,7 +114,7 @@ if(urlParams.has('game_name')){
 				comment: comment
 			}
 		})
-		document.body.innerHTML+="<p>Score sent: "+score+"</p>";
+		info.innerText="Score sent: "+score;
 	}
 	const el=document.createElement("p");
 	const el2=document.createElement("button");
