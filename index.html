@@ -2,6 +2,7 @@
 <body style="background-color: #101010; color: #ffffff;"><!-- kongregate is always black -->
 
 <a href="#" onclick="history.back()">Click here to go back</a>
+<p id="info">Please wait...</p>
 
 <script type="module">
 import { Octokit } from "https://cdn.skypack.dev/@octokit/core";
@@ -99,9 +100,9 @@ if(urlParams.has('game_name')){
 	const gn='game_name';
 	game = urlParams.get(gn)
 	if(urlParams.has('score_text')){
-		const info = document.createElement("p");
-		info.innerText="Please wait...";
-		document.body.appendChild(info);
+		const info = document.getElementById("info");
+		info.innerText+=" Sending...";
+
 		const score = urlParams.get('score_text')
 		const name = urlParams.has('name_text')?urlParams.get('name_text'):""
 		const comment = urlParams.has('comment_text')?urlParams.get('comment_text'):""
