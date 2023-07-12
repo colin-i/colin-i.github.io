@@ -1,17 +1,17 @@
 
-<body style="background-color: #101010; color: #ffffff;"><!-- kongregate is always black -->
+<body style="background-color: #101010; color: #ffffff;">
 
 <a href="#" onclick="history.back()">Click here to go back</a>
 <p id="info">Please wait...</p>
 
 <script type="module">
-import { Octokit } from "https://cdn.skypack.dev/@octokit/core";
-
+import { request } from "https://esm.sh/@octokit/request";
 import { Base64 } from 'https://cdn.jsdelivr.net/npm/js-base64@3.7.3/base64.mjs';
 
-const octokit = new Octokit({
-  auth: 'github_pat_'+'11ACTLOTY0WKpwsmTKIAl8_WC88XGSlRbWIHztTWt3c0zourkSlVkT3dETNxlkQQidRBUGFNQVGqKrzSYg'
-			//it expires if pushed without +
+const requestWithAuth = request.defaults({
+  headers: {
+    authorization: 'token '+'github_pat_'+'11ACTLOTY0WKpwsmTKIAl8_WC88XGSlRbWIHztTWt3c0zourkSlVkT3dETNxlkQQidRBUGFNQVGqKrzSYg'
+    },
 });
 
 function btol(obj){
@@ -78,7 +78,7 @@ function dgoh(d,main,sum){
 
 let game;
 async function get_content(clas,ext=""){
-	const obj=await octokit.request("GET /repos/colin-i/experimental/contents/"+clas+"/"+game+ext, {ref: 'main'});
+	const obj=await requestWithAuth("GET /repos/colin-i/experimental/contents/"+clas+"/"+game+ext, {ref: 'main'});
 	return obj.data.content;
 }
 async function write_tabs(){
@@ -106,7 +106,7 @@ if(urlParams.has('game_name')){
 		const score = urlParams.get('score_text')
 		const name = urlParams.has('name_text')?urlParams.get('name_text'):""
 		const comment = urlParams.has('comment_text')?urlParams.get('comment_text'):""
-		await octokit.request('POST /repos/colin-i/experimental/actions/workflows/39687662/dispatches', {
+		await requestWithAuth('POST /repos/colin-i/experimental/actions/workflows/39687662/dispatches', {
 			ref: 'main',
 			inputs: {
 				game: game,
