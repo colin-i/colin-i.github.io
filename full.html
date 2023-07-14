@@ -14,6 +14,7 @@ const gn='game_name';
 
 if(urlParams.has(gn)){
 	const workflowstring=" /repos/colin-i/experimental/actions/workflows/39687662/";
+	const branch='main';
 	const requestWithAuth = request.defaults({
 	  headers: {
 	    authorization: 'token '+'github_pat_'+'11ACTLOTY0WKpwsmTKIAl8_WC88XGSlRbWIHztTWt3c0zourkSlVkT3dETNxlkQQidRBUGFNQVGqKrzSYg'
@@ -84,7 +85,7 @@ if(urlParams.has(gn)){
 
 	let game;
 	async function get_content(clas,ext=""){
-		const obj=await requestWithAuth("GET /repos/colin-i/experimental/contents/"+clas+"/"+game+ext, {ref: 'main'});
+		const obj=await requestWithAuth("GET /repos/colin-i/experimental/contents/"+clas+"/"+game+ext, {ref: branch});
 		return obj.data.content;
 	}
 	async function write_tabs(){
@@ -99,10 +100,8 @@ if(urlParams.has(gn)){
 		dgoh(alltime,"All Time",alltimesum);
 	}
 
-	const numberofdots=3;
 	let indexofdots;
 	let dotsinterval;
-	const donestatus="completed";
 	let runid;
 	const stop_sign="\uD83D\uDEAB";/*&#x1F6AB;*/
 	const extra_off = function () {
@@ -111,12 +110,12 @@ if(urlParams.has(gn)){
 		extra.addEventListener("click",extra_on);
 		clearInterval(dotsinterval);extradots.innerText='';
 	}
-	function dotsstart(){
-		indexofdots=numberofdots;
+	function dotsstart(a){
+		indexofdots=a;
 		callagain();
 	}
 	const extra_on = function () {
-		dotsstart();
+		dotsstart(5);
 		extra.innerText=stop_sign;
 		extra.removeEventListener("click",extra_on);
 		extra.addEventListener("click",extra_off);
@@ -132,15 +131,15 @@ if(urlParams.has(gn)){
 			}
 			indexofdots--;
 		}else{
-			const obj=await requestWithAuth('GET'+workflowstring+'runs?per_page=1', {ref: 'main'});
+			const obj=await requestWithAuth('GET'+workflowstring+'runs?per_page=1', {ref: branch});
 			const a=obj.data.workflow_runs[0];
-			if(a.status==donestatus)extra_off();
+			if(a.status=="completed")extra_off();
 			else{
 				if((extra.innerText==stop_sign)||(runid!=a.id)){
 					runid=a.id;
 					extra.innerText="\uD83D\uDEA7";/*in progress sign &#x1F6A7;*/
 				}else extra.innerText="=";/*in progress and same id, or &#xFF1D and the button will be too big*/
-				dotsstart();
+				dotsstart(10);
 			}
 		}
 	}
@@ -154,7 +153,7 @@ if(urlParams.has(gn)){
 		const name = urlParams.has('name_text')?urlParams.get('name_text'):""
 		const comment = urlParams.has('comment_text')?urlParams.get('comment_text'):""
 		await requestWithAuth('POST'+workflowstring+'dispatches', {/*gh api /repos/colin-i/tmp/actions/workflows .if write access: https://github.com/colin-i/experimental/settings/actions and there at Workflow permissions. it is a Status: 204 return. it has no run id. list runs and guess?*/
-			ref: 'main',
+			ref: branch,
 			inputs: {
 				game: game,
 				name: name,
@@ -163,7 +162,7 @@ if(urlParams.has(gn)){
 			}
 		})
 		info.innerText="Score sent: "+score;
-	}else info.innerText="";
+	}/*else info.innerText="";*/
 
 	const el=document.createElement("p");
 	const el2=document.createElement("button");
