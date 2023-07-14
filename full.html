@@ -5,99 +5,147 @@
 <p id="info">Please wait...</p>
 
 <script type="module">
-import { request } from "https://esm.sh/@octokit/request";
-import { Base64 } from 'https://cdn.jsdelivr.net/npm/js-base64@3.7.3/base64.mjs';
-/*import { Octokit } from "https://cdn.skypack.dev/@octokit/core";const octokit = new Octokit({auth: 'github_pat_'+'11ACTLOTY0WKpwsmTKIAl8_WC88XGSlRbWIHztTWt3c0zourkSlVkT3dETNxlkQQidRBUGFNQVGqKrzSYg'});*/
-const requestWithAuth = request.defaults({
-  headers: {
-    authorization: 'token '+'github_pat_'+'11ACTLOTY0WKpwsmTKIAl8_WC88XGSlRbWIHztTWt3c0zourkSlVkT3dETNxlkQQidRBUGFNQVGqKrzSYg'
-    /*it expires if pushed without +. at least at Octokit.*/},
-});
-
-function btol(obj){
-	const timeleft = obj.charCodeAt(0) | (obj.charCodeAt(1) << 8) | (obj.charCodeAt(2) << 16) | (obj.charCodeAt(3) << 24);
-	obj=obj.slice(4);
-	const timeright = obj.charCodeAt(0) | (obj.charCodeAt(1) << 8) | (obj.charCodeAt(2) << 16) | (obj.charCodeAt(3) << 24);
-	return 2**32*timeright + timeleft;
-}
-function _atob(a){
-	return Base64.atob(a)
-}
-function atod(a){
-	let out=[];
-	let obj=_atob(a);
-	while(obj.length!=0){
-		const score = obj.charCodeAt(0) | (obj.charCodeAt(1) << 8) | (obj.charCodeAt(2) << 16) | (obj.charCodeAt(3) << 24);
-		obj=obj.slice(4);
-		let i;
-		for(i=0;i<obj.length;i++)if(obj.charCodeAt(i)==0)break;
-		const name=obj.substr(0,i);
-		obj=obj.slice(i+1);
-		for(i=0;i<obj.length;i++)if(obj.charCodeAt(i)==0)break;
-		const comment=obj.substr(0,i);
-		obj=obj.slice(i+1);
-		const time=new Date(btol(obj)*1000);
-		obj=obj.slice(8);
-		const item={
-			score: score,
-			name: name,
-			comment: comment,
-			time: time
-		}
-		out.push(item);
-	}
-	return out;
-}
-function atol(a){
-	return btol(_atob(a));
-}
-
-let tables;
-function dgoh(d,main,sum){
-	tables.innerHTML+="<br><h3>"+main+" Top</h3>";
-	const el=document.createElement("table");
-	el.style='border:1px solid';
-	el.innerHTML="<tr><th></th><th>Name</th><th>Score</th><th>Date</th><th>Comment</th></tr>";
-	for(let i=0;i<d.length;i++){
-		const x=d[i];
-		const el2=document.createElement("tr");
-		el2.innerHTML="<td>"+(i+1)+"</td>";
-		let el3=document.createElement("td");
-		el3.innerText=x.name;
-		el2.appendChild(el3);
-		el2.innerHTML+="<td>"+x.score.toString()+"</td>";
-		el2.innerHTML+="<td>"+x.time.toString()+"</td>";
-		el3=document.createElement("td");
-		el3.innerText=x.comment;
-		el2.appendChild(el3);
-		el.appendChild(el2);
-	}
-	tables.appendChild(el);
-	tables.innerHTML+="<p>Total entries: "+sum.toString()+"</p>";
-}
-
-let game;
-async function get_content(clas,ext=""){
-	const obj=await requestWithAuth("GET /repos/colin-i/experimental/contents/"+clas+"/"+game+ext, {ref: 'main'});
-	return obj.data.content;
-}
-async function write_tabs(){
-	const recent=atod(await get_content("recent"));
-	const recentsum=atol(await get_content("recent",".tot"));
-	const last=atod(await get_content("last"));
-	const lastsum=atol(await get_content("last",".tot"));
-	const alltime=atod(await get_content("data"));
-	const alltimesum=atol(await get_content("data",".tot"));
-	dgoh(recent,"This Month",recentsum);
-	dgoh(last,"Last Month",lastsum);
-	dgoh(alltime,"All Time",alltimesum);
-}
+import { request } from "https://esm.sh/@octokit/request";/*import { Octokit } from "https://cdn.skypack.dev/@octokit/core";const octokit = new Octokit({auth: 'github_pat_'+'11ACTLOTY0WKpwsmTKIAl8_WC88XGSlRbWIHztTWt3c0zourkSlVkT3dETNxlkQQidRBUGFNQVGqKrzSYg'});*/
+import { Base64 } from 'https://cdn.jsdelivr.net/npm/js-base64@3.7.3/base64.mjs';/*import will not work inside first {}*/
 
 const queryString = self.location.search;
 const urlParams = new URLSearchParams(queryString);
+const gn='game_name';
 
-if(urlParams.has('game_name')){
-	const gn='game_name';
+if(urlParams.has(gn)){
+	const workflowstring=" /repos/colin-i/experimental/actions/workflows/39687662/";
+	const requestWithAuth = request.defaults({
+	  headers: {
+	    authorization: 'token '+'github_pat_'+'11ACTLOTY0WKpwsmTKIAl8_WC88XGSlRbWIHztTWt3c0zourkSlVkT3dETNxlkQQidRBUGFNQVGqKrzSYg'
+	    /*it expires if pushed without +. at least at Octokit.*/},
+	});
+
+	function btol(obj){
+		const timeleft = obj.charCodeAt(0) | (obj.charCodeAt(1) << 8) | (obj.charCodeAt(2) << 16) | (obj.charCodeAt(3) << 24);
+		obj=obj.slice(4);
+		const timeright = obj.charCodeAt(0) | (obj.charCodeAt(1) << 8) | (obj.charCodeAt(2) << 16) | (obj.charCodeAt(3) << 24);
+		return 2**32*timeright + timeleft;
+	}
+	function _atob(a){
+		return Base64.atob(a)
+	}
+	function atod(a){
+		let out=[];
+		let obj=_atob(a);
+		while(obj.length!=0){
+			const score = obj.charCodeAt(0) | (obj.charCodeAt(1) << 8) | (obj.charCodeAt(2) << 16) | (obj.charCodeAt(3) << 24);
+			obj=obj.slice(4);
+			let i;
+			for(i=0;i<obj.length;i++)if(obj.charCodeAt(i)==0)break;
+			const name=obj.substr(0,i);
+			obj=obj.slice(i+1);
+			for(i=0;i<obj.length;i++)if(obj.charCodeAt(i)==0)break;
+			const comment=obj.substr(0,i);
+			obj=obj.slice(i+1);
+			const time=new Date(btol(obj)*1000);
+			obj=obj.slice(8);
+			const item={
+				score: score,
+				name: name,
+				comment: comment,
+				time: time
+			}
+			out.push(item);
+		}
+		return out;
+	}
+	function atol(a){
+		return btol(_atob(a));
+	}
+
+	let tables;
+	function dgoh(d,main,sum){
+		tables.innerHTML+="<br><h3>"+main+" Top</h3>";
+		const el=document.createElement("table");
+		el.style='border:1px solid';
+		el.innerHTML="<tr><th></th><th>Name</th><th>Score</th><th>Date</th><th>Comment</th></tr>";
+		for(let i=0;i<d.length;i++){
+			const x=d[i];
+			const el2=document.createElement("tr");
+			el2.innerHTML="<td>"+(i+1)+"</td>";
+			let el3=document.createElement("td");
+			el3.innerText=x.name;
+			el2.appendChild(el3);
+			el2.innerHTML+="<td>"+x.score.toString()+"</td>";
+			el2.innerHTML+="<td>"+x.time.toString()+"</td>";
+			el3=document.createElement("td");
+			el3.innerText=x.comment;
+			el2.appendChild(el3);
+			el.appendChild(el2);
+		}
+		tables.appendChild(el);
+		tables.innerHTML+="<p>Total entries: "+sum.toString()+"</p>";
+	}
+
+	let game;
+	async function get_content(clas,ext=""){
+		const obj=await requestWithAuth("GET /repos/colin-i/experimental/contents/"+clas+"/"+game+ext, {ref: 'main'});
+		return obj.data.content;
+	}
+	async function write_tabs(){
+		const recent=atod(await get_content("recent"));
+		const recentsum=atol(await get_content("recent",".tot"));
+		const last=atod(await get_content("last"));
+		const lastsum=atol(await get_content("last",".tot"));
+		const alltime=atod(await get_content("data"));
+		const alltimesum=atol(await get_content("data",".tot"));
+		dgoh(recent,"This Month",recentsum);
+		dgoh(last,"Last Month",lastsum);
+		dgoh(alltime,"All Time",alltimesum);
+	}
+
+	const numberofdots=3;
+	let indexofdots;
+	let dotsinterval;
+	const donestatus="completed";
+	let runid;
+	const stop_sign="\uD83D\uDEAB";/*&#x1F6AB;*/
+	const extra_off = function () {
+		extra.innerText="\u27F3";/*refresh sign*/
+		extra.removeEventListener("click",extra_off);
+		extra.addEventListener("click",extra_on);
+		clearInterval(dotsinterval);extradots.innerText='';
+	}
+	function dotsstart(){
+		indexofdots=numberofdots;
+		callagain();
+	}
+	const extra_on = function () {
+		dotsstart();
+		extra.innerText=stop_sign;
+		extra.removeEventListener("click",extra_on);
+		extra.addEventListener("click",extra_off);
+		dotsinterval=setInterval(callagain,1000);
+	}
+	async function callagain(){
+		if(indexofdots>0){
+			let a=indexofdots;
+			extradots.innerText='';
+			while(a){
+				a--;
+				extradots.innerText+='.';
+			}
+			indexofdots--;
+		}else{
+			const obj=await requestWithAuth('GET'+workflowstring+'runs?per_page=1', {ref: 'main'});
+			const a=obj.data.workflow_runs[0];
+			if(a.status==donestatus)extra_off();
+			else{
+				if((extra.innerText==stop_sign)||(runid!=a.id)){
+					runid=a.id;
+					extra.innerText="\uD83D\uDEA7";/*in progress sign &#x1F6A7;*/
+				}else extra.innerText="=";/*in progress and same id, or &#xFF1D and the button will be too big*/
+				dotsstart();
+			}
+		}
+		console.log("x");
+	}
+
 	game = urlParams.get(gn)
 	if(urlParams.has('score_text')){
 		const info = document.getElementById("info");
@@ -106,7 +154,7 @@ if(urlParams.has('game_name')){
 		const score = urlParams.get('score_text')
 		const name = urlParams.has('name_text')?urlParams.get('name_text'):""
 		const comment = urlParams.has('comment_text')?urlParams.get('comment_text'):""
-		await requestWithAuth('POST /repos/colin-i/experimental/actions/workflows/39687662/dispatches', {/*gh api /repos/colin-i/tmp/actions/workflows .if write access: https://github.com/colin-i/experimental/settings/actions and there at Workflow permissions. it is a Status: 204 return. it has no run id. list runs and guess?*/
+		await requestWithAuth('POST'+workflowstring+'dispatches', {/*gh api /repos/colin-i/tmp/actions/workflows .if write access: https://github.com/colin-i/experimental/settings/actions and there at Workflow permissions. it is a Status: 204 return. it has no run id. list runs and guess?*/
 			ref: 'main',
 			inputs: {
 				game: game,
@@ -117,6 +165,7 @@ if(urlParams.has('game_name')){
 		})
 		info.innerText="Score sent: "+score;
 	}else info.innerText="";
+
 	const el=document.createElement("p");
 	const el2=document.createElement("button");
 	el2.innerText="Click here to refresh";
@@ -125,6 +174,13 @@ if(urlParams.has('game_name')){
 		write_tabs();
 	});
 	el.appendChild(el2);
+
+	const extra=document.createElement("button");
+	el.appendChild(extra);
+	const extradots=document.createElement("span");
+	el.appendChild(extradots);
+	extra_on();
+
 	document.body.appendChild(el);
 	tables=document.createElement("div");
 	write_tabs();
