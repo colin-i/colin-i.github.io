@@ -5,7 +5,7 @@
 <p id="info">Please wait...</p>
 
 <script type="module">
-import { request } from "https://esm.sh/@octokit/request";/*import { Octokit } from "https://cdn.skypack.dev/@octokit/core";const octokit = new Octokit({auth: 'github_pat_'+'11ACTLOTY0WKpwsmTKIAl8_WC88XGSlRbWIHztTWt3c0zourkSlVkT3dETNxlkQQidRBUGFNQVGqKrzSYg'});*/
+import { request } from "https://esm.sh/@octokit/request";/*import { Octokit } from "https://cdn.skypack.dev/@octokit/core";const octokit = new Octokit({auth: 'github_pat_'+'...'});*/
 import { Base64 } from 'https://cdn.jsdelivr.net/npm/js-base64@3.7.3/base64.mjs';/*import will not work inside first {}*/
 
 const queryString = self.location.search;
@@ -17,7 +17,7 @@ if(urlParams.has(gn)){
 	const branch='main';
 	const requestWithAuth = request.defaults({
 	  headers: {
-	    authorization: 'token '+'github_pat_'+'11ACTLOTY0tV4rBGGLZh1j_JsJaqXahCJcryeQkz0zBmoOGrWTSFYyQKRNdS2HWbF2EDV4CW5BwtPkjUVK'
+	    authorization: 'token '+'github_pat_'+'..................................................................................'
 	    /*it expires if pushed without +. at least at Octokit.*/},
 	});
 
