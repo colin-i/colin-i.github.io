@@ -1,13 +1,1 @@
-<!DOCTYPE html>
-<html>
-  <body>
-    <!-- Lightweight client-side loader that feature-detects and load polyfills only when necessary -->
-    <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs@2/webcomponents-loader.min.js"></script>
-
-    <!-- Load the element definition -->
-    <script type="module" src="https://cdn.jsdelivr.net/gh/zerodevx/zero-md@1/src/zero-md.min.js"></script>
-
-    <!-- Simply set the `src` attribute to your MD file and win -->
-    <zero-md src="https://gist.githubusercontent.com/colin-i/e324e85e0438ed71219673fbcc661da6/raw"></zero-md>
-  </body>
-</html>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><script src="https://unpkg.com/@ruffle-rs/ruffle"></script><style>body,html{margin:0;padding:0;width:100%;height:100%;overflow:hidden;display:flex;justify-content:center;align-items:center;background:#000}.container{display:flex;flex-direction:column;align-items:center;width:100vw;height:100vh}.topbar{width:100%;display:flex;justify-content:space-between;box-sizing:border-box}.topbar a{color:#fff;text-decoration:none;font-size:20px;font-family:Arial,sans-serif}.topbar a:hover{text-decoration:underline}</style></head><body><div class="container"><div class="topbar"><a href="index.html">Games</a> <a href="member.html">Account</a> <a href="scores.html">Scores</a> <a href="https://github.com/colin-i/flashixy">Source</a></div><div id="game"></div></div><script type="module">const gameDiv=document.getElementById("game");gameDiv.style.flex=1,gameDiv.style.width="100%";import{initializeApp}from"https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";import{doc,getFirestore,setDoc}from"https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";const firebaseConfig={apiKey:"AIzaSyARyiE9nZgVn-Kl8Czy8jg8NvFhnhQpVdA",authDomain:"flashixy.firebaseapp.com",projectId:"flashixy",storageBucket:"flashixy.firebasestorage.app",messagingSenderId:"532290059123",appId:"1:532290059123:web:16aef843581cd58eaa2306",measurementId:"G-TK4R59VE96"},app=initializeApp(firebaseConfig),db=getFirestore(app);let nameRef,ins=!1;const auth=getAuth(app);window.submitScore=async function(e,t){ins&&await setDoc(nameRef,{score:t})},onAuthStateChanged(auth,async e=>{e&&(nameRef=doc(db,"Test",e.uid),ins=!0)})</script><script>window.onSwfReady=function(){return!window.matchMedia("(pointer: fine)").matches},window.RufflePlayer=window.RufflePlayer||{},window.RufflePlayer.config={allowScriptAccess:!0,autoplay:"on",preferredRenderer:"webgl"};const ruffle=window.RufflePlayer.newest(),player=ruffle.createPlayer();player.style.width="100%",player.style.height="100%",document.getElementById("game").appendChild(player),player.load("universe.swf")</script></body></html>
