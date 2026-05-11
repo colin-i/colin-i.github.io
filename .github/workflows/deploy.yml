@@ -1,0 +1,52 @@
+name: Deploy Release Assets
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch to overwrite"
+        required: true
+  push: -- temporary invalid syntax
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch }}
+          fetch-depth: 2
+
+      - name: Configure git
+        run: |
+          git config user.name "sync"
+          git config user.email "mail@flashixy.com"
+
+      - name: Checkout previous commit
+        run: |
+          PREV_COMMIT=$(git rev-parse HEAD~1)
+
+          git checkout $PREV_COMMIT
+
+      - name: Download release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG=$(gh release list --json tagName --jq '.[0].tagName')
+
+          gh release download "$TAG"
+
+      - name: Commit
+        run: |
+          git add ./*
+
+          git commit -m "Deploy release assets" || exit 0
+
+      - name: Force push
+        run: |
+          git push origin HEAD:${{ github.event.inputs.branch }} --force
