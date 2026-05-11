@@ -6,7 +6,6 @@ on:
       branch:
         description: "Branch to overwrite"
         required: true
-  push: -- temporary invalid syntax
 
 permissions:
   contents: write
