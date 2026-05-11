@@ -6,6 +6,8 @@ on:
       branch:
         description: "Branch to overwrite"
         required: true
+      commit:
+        description: "Base commit, 0 for last"
 
 permissions:
   contents: write
@@ -28,8 +30,13 @@ jobs:
 
       - name: Checkout previous commit
         run: |
-          PREV_COMMIT=$(git rev-parse HEAD~1)
-
+          if [ "${{ github.event.inputs.commit }}" = "" ]; then
+           PREV_COMMIT=bcf457647a112e5c7b6c8df6142cc245d2253dcc
+          elif [ "${{ github.event.inputs.commit }}" = 0 ]; then
+           PREV_COMMIT=$(git rev-parse HEAD~1)
+          else
+           PREV_COMMIT=${{ github.event.inputs.commit }}
+          fi
           git checkout $PREV_COMMIT
 
       - name: Download release assets
@@ -37,13 +44,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           TAG=$(gh release list --json tagName --jq '.[0].tagName')
-
           gh release download --clobber "$TAG" #clobber to overwrite
 
       - name: Commit
         run: |
           git add ./*
-
           git commit -m "Deploy release assets" # here will exit if nothing to commit
 
       - name: Force push
