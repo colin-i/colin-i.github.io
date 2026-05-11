@@ -38,7 +38,7 @@ jobs:
         run: |
           TAG=$(gh release list --json tagName --jq '.[0].tagName')
 
-          gh release download "$TAG"
+          gh release download --clobber "$TAG" #clobber to overwrite
 
       - name: Commit
         run: |
